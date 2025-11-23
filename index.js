@@ -7,17 +7,25 @@ const { getSessionsByDate } = require('./logger');
 const app = express();
 app.use(express.json());
 
+// Health check for Render root URL
+app.get('/', (req, res) => {
+  res.send('Bikroy Bot is Running');
+});
+
+// Adapter for Teams messages
 const adapter = new BotFrameworkAdapter({
   appId: process.env.MicrosoftAppId,
   appPassword: process.env.MicrosoftAppPassword
 });
 
+// Teams endpoint
 app.post('/api/messages', (req, res) => {
   adapter.processActivity(req, res, async (context) => {
     await handleTeamsMessage(context);
   });
 });
 
+// Web query for logs
 app.get('/sessions', async (req, res) => {
   const { date, month, year } = req.query;
   try {
